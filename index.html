@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POS Emprendimiento - Mejorado</title>
+  <title>POS Don Dionisio</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
   <style>
     :root {
@@ -68,6 +67,16 @@
       padding: 15px 20px;
       text-align: center;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100px;
+    }
+    header h1 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .content {
       display: none;
@@ -132,32 +141,39 @@
       margin-bottom:20px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    #stats p {
-      font-size:1.2rem;
-      margin:10px 0;
-    }
-    #chartContainer {
-      width:100%;
-      max-width:400px;
-      margin: 20px auto;
-    }
     
-    /* MEJORAS PARA EL MENÚ */
+    /* MEJORAS PARA EL MENÚ - Nuevo diseño */
     .menu-container {
       display: grid;
       grid-template-columns: 3fr 1fr;
       gap: 20px;
+      height: calc(100vh - 200px);
     }
     @media (max-width: 900px) {
       .menu-container {
         grid-template-columns: 1fr;
       }
     }
-    .category-selector {
+    .menu-content {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
-      margin-bottom: 20px;
+      overflow-y: auto;
+      padding-right: 10px;
+      max-height: 100%;
+    }
+    .menu-content::-webkit-scrollbar {
+      width: 8px;
+    }
+    .menu-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .menu-content::-webkit-scrollbar-thumb {
+      background: #bdbdbd;
+      border-radius: 4px;
+    }
+    .menu-content::-webkit-scrollbar-thumb:hover {
+      background: #9e9e9e;
     }
     .category-item {
       background: white;
@@ -180,19 +196,7 @@
       max-height: 300px;
       overflow-y: auto;
       padding: 10px;
-    }
-    .category-content::-webkit-scrollbar {
-      width: 8px;
-    }
-    .category-content::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    .category-content::-webkit-scrollbar-thumb {
-      background: #bdbdbd;
-      border-radius: 4px;
-    }
-    .category-content::-webkit-scrollbar-thumb:hover {
-      background: #9e9e9e;
+      display: block; /* Cambiado para mostrar inicialmente */
     }
     .product-item {
       padding: 10px;
@@ -369,7 +373,7 @@
       background: #388e3c;
     }
     
-    /* Ticket de impresión */
+    /* Ticket de impresión - Nuevo diseño */
     .ticket-container {
       display: none;
       position: fixed;
@@ -390,25 +394,32 @@
       max-width: 90%;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
       text-align: center;
+      font-family: monospace;
     }
     .ticket-header {
       text-align: center;
       margin-bottom: 15px;
+      font-weight: bold;
     }
     .ticket-header h1 {
-      font-size: 24px;
-      color: #d84315;
+      font-size: 32px;
+      color: #000;
       margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
     .ticket-header h2 {
-      font-size: 20px;
-      color: #333;
+      font-size: 24px;
+      color: #000;
       margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
     .ticket-info {
-      margin: 10px 0;
-      font-size: 14px;
-      color: #555;
+      margin: 15px 0;
+      font-size: 16px;
+      color: #000;
+      text-align: left;
     }
     .ticket-table {
       width: 100%;
@@ -417,31 +428,30 @@
     }
     .ticket-table th {
       border-bottom: 2px solid #000;
-      padding: 5px 0;
+      padding: 8px 0;
       text-align: left;
+      font-weight: bold;
     }
     .ticket-table td {
-      padding: 5px 0;
+      padding: 6px 0;
       border-bottom: 1px solid #ddd;
     }
     .ticket-total {
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
       text-align: right;
-      margin: 10px 0;
+      margin: 20px 0;
+      border-top: 2px solid #000;
+      padding-top: 10px;
     }
     .ticket-address {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       margin: 20px 0;
       padding: 10px;
       background: #f0f0f0;
       border-radius: 5px;
-    }
-    .ticket-footer {
-      margin-top: 20px;
-      font-style: italic;
-      color: #777;
+      text-align: left;
     }
     .ticket-actions {
       margin-top: 20px;
@@ -453,6 +463,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-weight: bold;
     }
     #printTicket {
       background: #4caf50;
@@ -462,19 +473,160 @@
       background: #f44336;
       color: white;
     }
+    
+    /* Control de caja */
+    .caja-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .caja-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+    .caja-section h3 {
+      color: var(--color-principal);
+      margin-bottom: 15px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    #totalEfectivo, #totalCaja, #totalVentas, #totalMercadoPago {
+      font-size: 1.8em;
+      font-weight: bold;
+      text-align: center;
+      color: #2E7D32;
+      margin: 10px 0;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #gastosList {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 15px 0;
+      flex: 1;
+    }
+    .gasto-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .gasto-item button {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8em;
+    }
+    .form-gasto {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .form-gasto input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    /* Nuevos estilos para vista previa */
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .empty-preview {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+      font-style: italic;
+    }
+    .preview-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .preview-item .item-time {
+      font-size: 0.8em;
+      color: #888;
+    }
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .preview-actions button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #clearOrder {
+      background: #f5f5f5;
+      color: #333;
+    }
+    #clearOrder:hover {
+      background: #e0e0e0;
+    }
+    
+    /* Secciones adicionales para caja */
+    .caja-ventas-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    /* Estilos para impresión de dos tickets */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .ticket-container, .ticket-container * {
+        visibility: visible;
+      }
+      .ticket-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        background: white;
+      }
+      .ticket-content {
+        box-shadow: none;
+        margin: 0 10px;
+        width: 45%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="sidebar">
     <div class="tab active" data-target="nuevo"><i class="fas fa-plus-circle"></i> Nuevo Pedido</div>
     <div class="tab" data-target="gestion"><i class="fas fa-cogs"></i> Gestión Productos</div>
-    <div class="tab" data-target="resumen"><i class="fas fa-chart-line"></i> Resumen Ventas</div>
+    <div class="tab" data-target="resumen"><i class="fas fa-cash-register"></i> Control de Caja</div>
   </div>
   
   <div class="main">
     <header>
-      <h1><i class="fas fa-pizza-slice"></i> Sistema POS - Don Dionisio</h1>
-      <p>Restaurant Pizzeria - Casa Festa</p>
+      <h1><i class="fas fa-pizza-slice"></i> POS - PIZZERIA DON DIONISIO</h1>
     </header>
     
     <!-- NUEVO PEDIDO -->
@@ -489,60 +641,65 @@
       <!-- Menú Pedidos -->
       <div id="menu" class="sub-content active">
         <div class="menu-container">
-          <div>
-            <h3>Seleccione productos por categoría</h3>
-            <div class="category-selector">
-              <div class="category-item">
-                <div class="category-header" data-cat="pizzas">
-                  <span>Pizzas</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="category-content" id="pizzasList"></div>
+          <div class="menu-content">
+            <!-- Pizzas -->
+            <div class="category-item">
+              <div class="category-header" data-cat="pizzas">
+                <span>Pizzas</span>
+                <i class="fas fa-chevron-down"></i>
               </div>
-              
-              <div class="category-item">
-                <div class="category-header" data-cat="sandwiches_de_milanesa">
-                  <span>Sándwiches de Milanesa</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="category-content" id="sandwiches_de_milanesaList"></div>
-              </div>
-              
-              <div class="category-item">
-                <div class="category-header" data-cat="hamburguesas">
-                  <span>Hamburguesas</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="category-content" id="hamburguesasList"></div>
-              </div>
-              
-              <div class="category-item">
-                <div class="category-header" data-cat="empanadas">
-                  <span>Empanadas</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="category-content" id="empanadasList"></div>
-              </div>
-              
-              <div class="category-item">
-                <div class="category-header" data-cat="minutas">
-                  <span>Minutas</span>
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="category-content" id="minutasList"></div>
-              </div>
+              <div class="category-content" id="pizzasList"></div>
             </div>
             
-            <div id="productDetail" style="display: none; margin-top: 20px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-              <h3>Detalle del Producto</h3>
-              <div id="detailContent"></div>
+            <!-- Hamburguesas -->
+            <div class="category-item">
+              <div class="category-header" data-cat="hamburguesas">
+                <span>Hamburguesas</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="category-content" id="hamburguesasList"></div>
+            </div>
+            
+            <!-- Sándwiches de Milanesa -->
+            <div class="category-item">
+              <div class="category-header" data-cat="sandwiches">
+                <span>Sándwiches</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="category-content" id="sandwichesList"></div>
+            </div>
+            
+            <!-- Empanadas -->
+            <div class="category-item">
+              <div class="category-header" data-cat="empanadas">
+                <span>Empanadas</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="category-content" id="empanadasList"></div>
+            </div>
+            
+            <!-- Minutas -->
+            <div class="category-item">
+              <div class="category-header" data-cat="minutas">
+                <span>Minutas</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="category-content" id="minutasList"></div>
             </div>
           </div>
           
           <div class="preview">
-            <h3><i class="fas fa-shopping-cart"></i> Vista Previa del Pedido</h3>
-            <ul id="previewList"></ul>
-            <p id="previewTotal">Total: $0</p>
+            <div class="preview-header">
+              <h3><i class="fas fa-shopping-cart"></i> Vista Previa del Pedido</h3>
+              <span id="itemsCount">0 items</span>
+            </div>
+            
+            <div id="previewContainer">
+              <div class="empty-preview">No hay productos en el pedido</div>
+              <ul id="previewList" style="display: none;"></ul>
+            </div>
+            
+            <p id="previewTotal" style="display: none;">Total: $0</p>
             
             <div class="order-form">
               <input type="text" id="dir" placeholder="Dirección de entrega">
@@ -551,6 +708,16 @@
                 <option value="mercadopago">MercadoPago</option>
               </select>
               <button class="add-btn" id="finalizar">Finalizar Pedido</button>
+            </div>
+            
+            <div class="preview-actions">
+              <button id="clearOrder">Vaciar Pedido</button>
+              <button id="showDetail" style="display: none;">Ver Detalle</button>
+            </div>
+            
+            <div id="productDetail" style="display: none; margin-top: 20px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+              <h3>Detalle del Producto</h3>
+              <div id="detailContent"></div>
             </div>
           </div>
         </div>
@@ -595,7 +762,7 @@
         <select id="newTipo" style="padding:10px;">
           <option value="pizzas">Pizza</option>
           <option value="hamburguesas">Hamburguesa</option>
-          <option value="sandwiches_de_milanesa">Sándwich de Milanesa</option>
+          <option value="sandwiches">Sándwich</option>
           <option value="empanadas">Empanada</option>
           <option value="minutas">Minuta</option>
         </select>
@@ -604,47 +771,73 @@
       </div>
     </div>
     
-    <!-- RESUMEN VENTAS -->
+    <!-- CONTROL DE CAJA -->
     <div id="resumen" class="content">
-      <h2><i class="fas fa-chart-pie"></i> Resumen de Ventas</h2>
-      <div id="stats"></div>
-      <div id="chartContainer"><canvas id="salesChart"></canvas></div>
+      <h2><i class="fas fa-cash-register"></i> Control de Caja</h2>
+      
+      <div class="caja-container">
+        <div class="caja-section">
+          <h3>Total en Efectivo</h3>
+          <p id="totalEfectivo">$0</p>
+        </div>
+        
+        <div class="caja-section">
+          <h3>Gastos</h3>
+          <div id="gastosList"></div>
+          <div class="form-gasto">
+            <input type="text" id="gastoDesc" placeholder="Descripción">
+            <input type="number" id="gastoMonto" placeholder="Monto">
+            <button class="add-btn" id="addGasto">Agregar</button>
+          </div>
+        </div>
+        
+        <div class="caja-section">
+          <h3>Total Caja</h3>
+          <p id="totalCaja">$0</p>
+        </div>
+      </div>
+      
+      <div class="caja-ventas-container">
+        <div class="caja-section">
+          <h3>Total de Ventas</h3>
+          <p id="totalVentas">$0</p>
+        </div>
+        
+        <div class="caja-section">
+          <h3>Total en MercadoPago</h3>
+          <p id="totalMercadoPago">$0</p>
+        </div>
+      </div>
+      
       <button class="close-day" id="closeDay">Cerrar Día y Exportar Excel</button>
     </div>
   </div>
   
-  <!-- Ticket de impresión -->
+  <!-- Ticket de impresión - Nuevo diseño -->
   <div class="ticket-container" id="ticketContainer">
     <div class="ticket-content">
       <div class="ticket-header">
-        <h1>DON DIONISIO</h1>
-        <h2>Restaurant Pizzeria</h2>
-        <p>16, rue Jean-Jacques Rousseau<br>75001 PARIS<br>01 42 36 11 57</p>
+        <h1>DON</h1>
+        <h1>DIONISIO</h1>
       </div>
       
       <div class="ticket-info">
-        <p><strong>Pedido #<span id="ticketOrderId"></span></strong></p>
-        <p>Fecha: <span id="ticketDate"></span></p>
+        <p><strong>Dirección de entrega:</strong></p>
+        <p><span id="ticketAddress"></span></p>
       </div>
       
       <table class="ticket-table">
         <thead>
           <tr>
-            <th>Descripción</th>
-            <th style="text-align: right;">Precio</th>
+            <th>DETALLE</th>
+            <th style="text-align: right;">PRECIO</th>
           </tr>
         </thead>
         <tbody id="ticketItems"></tbody>
       </table>
       
       <div class="ticket-total">
-        Total: $<span id="ticketTotal"></span>
-      </div>
-      
-      <div class="ticket-address" id="ticketAddress"></div>
-      
-      <div class="ticket-footer">
-        <p>Merci de votre visite. À bientôt !</p>
+        TOTAL: $<span id="ticketTotal"></span>
       </div>
       
       <div class="ticket-actions">
@@ -685,7 +878,7 @@
           "Opción Dos (Doble)",
           "Combo 5 Hamburguesas"
         ],
-        SANDWICHES_DE_MILANESA: [
+        SANDWICHES: [
           "XL Completo",
           "XL Napolitano",
           "XL Ranchero",
@@ -758,38 +951,38 @@
       // Convertir el menú en array de productos
       let productos = [];
       Object.keys(menu).forEach(tipo => {
-        const tipoNormalizado = tipo.toLowerCase().replace('_', '');
         menu[tipo].forEach(nombre => {
           productos.push({
             id: Date.now() + Math.random(),
             nombre,
-            tipo: tipoNormalizado,
+            tipo: tipo.toLowerCase(),
             precio: defaultPrices[nombre] || 0
           });
         });
       });
 
       let pedidos = [], pid = 1, currentOrder = [];
+      let gastos = [];
 
-      // 1. Almacenamiento temporal en localStorage
+      // Almacenamiento temporal en localStorage
       const guardarDatosTemporales = () => {
         const datosDia = {
           productos,
           pedidos,
-          pid
+          pid,
+          gastos
         };
         localStorage.setItem('datosDia', JSON.stringify(datosDia));
       };
 
-      // 2. Cargar datos al iniciar (si existen)
+      // Cargar datos al iniciar (si existen)
       const cargarDatosTemporales = () => {
         const datosGuardados = localStorage.getItem('datosDia');
         return datosGuardados ? JSON.parse(datosGuardados) : null;
       };
 
-      // 3. Función "Cerrar día" (modificada)
+      // Función "Cerrar día" (modificada)
       const cerrarDia = () => {
-        // Paso 1: Respaldo en hoja de cálculo
         const ent = pedidos.filter(o => o.estado === 'finalizado');
         if(ent.length === 0) {
           alert('No hay pedidos entregados hoy');
@@ -799,7 +992,7 @@
         // Prepare data for Excel
         const data = ent.map(order => {
           const items = order.items.map(item => item.desc).join('; ');
-          const total = order.items.reduce((sum, item) => sum + item.precio, 0);
+          const total = order.items.reduce((s, i) => s + i.precio, 0);
           
           return {
             'ID Pedido': order.id,
@@ -825,16 +1018,17 @@
 
         alert(`Se ha generado el archivo Excel con ${ent.length} pedidos`);
         
-        // Paso 2: Borrar datos del localStorage
+        // Borrar datos del localStorage
         localStorage.removeItem('datosDia');
         
-        // Paso 3: Reiniciar variables de pedidos
+        // Reiniciar variables
         pedidos = [];
         pid = 1;
+        gastos = [];
         
         // Actualizar UI
         renderSubLists();
-        renderStats();
+        renderCaja();
         
         console.log("Día cerrado: Datos respaldados y borrados de caché.");
       };
@@ -845,9 +1039,10 @@
         productos = datosIniciales.productos || productos;
         pedidos = datosIniciales.pedidos || [];
         pid = datosIniciales.pid || pid;
+        gastos = datosIniciales.gastos || [];
       }
 
-      // Sidebar navigation
+      // Sidebar navigation - CORREGIDO
       const tabs = document.querySelectorAll('.sidebar .tab');
       tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -856,6 +1051,15 @@
           tab.classList.add('active');
           const target = tab.getAttribute('data-target');
           document.getElementById(target).classList.add('active');
+          
+          if (target === 'resumen') {
+            renderCaja();
+          } else if (target === 'gestion') {
+            renderManagement();
+          } else if (target === 'nuevo') {
+            renderCategories();
+            renderSubLists();
+          }
         });
       });
 
@@ -870,41 +1074,40 @@
           document.getElementById(subTarget).classList.add('active');
           if (subTarget === 'menu') {
             renderCategories();
+          } else {
+            renderSubLists();
           }
         });
       });
 
       // Render categories with scrollable lists
       function renderCategories() {
-        const categories = ['pizzas', 'hamburguesas', 'sandwichesdemilanesa', 'empanadas', 'minutas'];
-        
-        // Actualizar los nombres de las categorías para mostrar
-        const categoryNames = {
-          'pizzas': 'Pizzas',
-          'hamburguesas': 'Hamburguesas',
-          'sandwichesdemilanesa': 'Sándwiches de Milanesa',
-          'empanadas': 'Empanadas',
-          'minutas': 'Minutas'
-        };
+        const categories = ['pizzas', 'hamburguesas', 'sandwiches', 'empanadas', 'minutas'];
         
         categories.forEach(cat => {
           const list = document.getElementById(`${cat}List`);
           if (list) {
             list.innerHTML = '';
-            productos.filter(p => p.tipo === cat).forEach(p => {
-              const item = document.createElement('div');
-              item.className = 'product-item';
-              item.dataset.id = p.id;
-              item.innerHTML = `
-                <div class="product-name">${p.nombre}</div>
-                <div class="product-price">$${p.precio}</div>
-              `;
-              list.appendChild(item);
-              
-              item.addEventListener('click', () => {
-                showProductDetail(p);
+            const catProducts = productos.filter(p => p.tipo === cat);
+            
+            if (catProducts.length === 0) {
+              list.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">No hay productos en esta categoría</div>';
+            } else {
+              catProducts.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'product-item';
+                item.dataset.id = p.id;
+                item.innerHTML = `
+                  <div class="product-name">${p.nombre}</div>
+                  <div class="product-price">$${p.precio}</div>
+                `;
+                list.appendChild(item);
+                
+                item.addEventListener('click', () => {
+                  showProductDetail(p);
+                });
               });
-            });
+            }
           }
         });
       }
@@ -931,7 +1134,7 @@
               </div>
             </div>
           `;
-        } else if(p.tipo === 'sandwichesdemilanesa') {
+        } else if(p.tipo === 'sandwiches') {
           optionsHTML = `
             <div class="product-options">
               <h4>Opciones de Sándwich</h4>
@@ -951,7 +1154,7 @@
             <div style="font-size: 1.3em; font-weight: bold; color: var(--color-principal);">$${p.precio}</div>
           </div>
           <p style="margin-bottom: 15px; color:#666;">${p.tipo === 'pizzas' ? 'Pizza clásica con ingredientes frescos' : 
-            p.tipo === 'sandwichesdemilanesa' ? 'Sándwich artesanal' : p.tipo === 'hamburguesas' ? 'Hamburguesa gourmet' : p.tipo === 'empanadas' ? 'Empanada casera' : 'Minuta del día'}</p>
+            p.tipo === 'sandwiches' ? 'Sándwich artesanal' : p.tipo === 'hamburguesas' ? 'Hamburguesa gourmet' : p.tipo === 'empanadas' ? 'Empanada casera' : 'Minuta del día'}</p>
           ${optionsHTML}
           <div style="text-align: center; margin-top: 20px;">
             <button class="add-btn" style="padding: 12px 25px; font-size: 1.1em;" 
@@ -980,7 +1183,7 @@
           }
         }
         
-        if(prod.tipo === 'sandwichesdemilanesa') {
+        if(prod.tipo === 'sandwiches') {
           const checkbox = document.querySelector(`.papas-checkbox[data-id="${prod.id}"]`);
           if(checkbox && checkbox.checked) {
             precio += 1000;
@@ -1002,8 +1205,16 @@
         let sum = 0;
         
         if(currentOrder.length === 0) {
-          list.innerHTML = '<li style="text-align:center; color:#888; padding:20px;">No hay productos en el pedido</li>';
+          document.querySelector('#previewContainer .empty-preview').style.display = 'block';
+          list.style.display = 'none';
+          document.getElementById('previewTotal').style.display = 'none';
+          document.getElementById('showDetail').style.display = 'none';
         } else {
+          document.querySelector('#previewContainer .empty-preview').style.display = 'none';
+          list.style.display = 'block';
+          document.getElementById('previewTotal').style.display = 'block';
+          document.getElementById('showDetail').style.display = 'block';
+          
           currentOrder.forEach(i => {
             list.innerHTML += `
               <li>
@@ -1016,7 +1227,14 @@
         }
         
         document.getElementById('previewTotal').innerText = `Total: $${sum}`;
+        document.getElementById('itemsCount').innerText = `${currentOrder.length} ${currentOrder.length === 1 ? 'item' : 'items'}`;
       }
+      
+      // Vaciar pedido actual
+      document.getElementById('clearOrder').addEventListener('click', () => {
+        currentOrder = [];
+        updatePreview();
+      });
       
       // Finalize order and generate ticket
       document.getElementById('finalizar').addEventListener('click', () => {
@@ -1043,7 +1261,7 @@
         currentOrder = [];
         updatePreview();
         renderSubLists();
-        renderStats();
+        renderCaja();
         
         document.getElementById('dir').value = '';
         
@@ -1051,14 +1269,13 @@
         guardarDatosTemporales();
       });
       
-      // Show ticket for printing
+      // Show ticket for printing (nuevo diseño)
       function showTicket(order) {
         const total = order.items.reduce((sum, item) => sum + item.precio, 0);
         const date = new Date();
         const formattedDate = date.toLocaleDateString('es-ES');
         
-        document.getElementById('ticketOrderId').textContent = order.id;
-        document.getElementById('ticketDate').textContent = `${formattedDate} ${order.hora}`;
+        document.getElementById('ticketAddress').textContent = order.dir;
         
         const ticketItems = document.getElementById('ticketItems');
         ticketItems.innerHTML = '';
@@ -1072,13 +1289,12 @@
         });
         
         document.getElementById('ticketTotal').textContent = total.toFixed(2);
-        document.getElementById('ticketAddress').textContent = order.dir;
-        
         document.getElementById('ticketContainer').style.display = 'flex';
       }
       
-      // Print ticket
+      // Print ticket (now prints two copies)
       document.getElementById('printTicket').addEventListener('click', () => {
+        // Simular impresión de dos tickets
         window.print();
       });
       
@@ -1137,7 +1353,7 @@
               btn.addEventListener('click', () => {
                 o.estado = e === 'cocina' ? 'camino' : 'finalizado';
                 renderSubLists();
-                renderStats();
+                renderCaja();
                 guardarDatosTemporales();
               });
               
@@ -1219,81 +1435,110 @@
         document.getElementById('newPrice').value = '';
       });
       
-      // Render sales stats
-      function renderStats() {
-        const st = document.getElementById('stats');
-        const ent = pedidos.filter(o => o.estado === 'finalizado');
-        let total = 0, mp = 0;
+      // Render caja control
+      function renderCaja() {
+        // Calcular efectivo (solo pedidos finalizados en efectivo)
+        const efectivo = pedidos
+          .filter(o => o.estado === 'finalizado' && o.pago === 'efectivo')
+          .reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.precio, 0), 0);
         
-        ent.forEach(o => {
-          const m = o.items.reduce((s, i) => s + i.precio, 0);
-          total += m;
-          if(o.pago === 'mercadopago') mp += m;
-        });
+        // Calcular total gastos
+        const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
         
-        const cashPercent = total ? Math.round(((total-mp)/total)*100) : 0;
-        const mpPercent = total ? Math.round((mp/total)*100) : 0;
+        // Calcular total caja
+        const totalCaja = efectivo - totalGastos;
         
-        st.innerHTML = `
-          <p>Total ventas: <strong>$${total}</strong></p>
-          <p>MercadoPago: <strong>$${mp}</strong> (${mpPercent}%)</p>
-          <p>Efectivo: <strong>$${total-mp}</strong> (${cashPercent}%)</p>
-        `;
+        // Calcular total de ventas (todos los pedidos entregados)
+        const totalVentas = pedidos
+          .filter(o => o.estado === 'finalizado')
+          .reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.precio, 0), 0);
         
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        if(window.myChart) window.myChart.destroy();
+        // Calcular total en MercadoPago
+        const totalMercadoPago = pedidos
+          .filter(o => o.estado === 'finalizado' && o.pago === 'mercadopago')
+          .reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.precio, 0), 0);
         
-        window.myChart = new Chart(ctx, {
-          type: 'pie',
-          data: {
-            labels: ['Efectivo', 'MercadoPago'],
-            datasets: [{
-              data: [total-mp, mp],
-              backgroundColor: ['#d84315', '#ff5722'],
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom'
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw || 0;
-                    const percentage = context.dataset.data[context.dataIndex] / total * 100;
-                    return `${label}: $${value} (${percentage.toFixed(1)}%)`;
-                  }
-                }
-              }
-            }
-          }
-        });
+        // Actualizar UI
+        document.getElementById('totalEfectivo').textContent = `$${efectivo.toFixed(2)}`;
+        document.getElementById('totalCaja').textContent = `$${totalCaja.toFixed(2)}`;
+        document.getElementById('totalVentas').textContent = `$${totalVentas.toFixed(2)}`;
+        document.getElementById('totalMercadoPago').textContent = `$${totalMercadoPago.toFixed(2)}`;
+        
+        // Renderizar gastos
+        const gastosList = document.getElementById('gastosList');
+        gastosList.innerHTML = '';
+        
+        if(gastos.length === 0) {
+          gastosList.innerHTML = '<p style="text-align:center; color:#888;">No hay gastos registrados</p>';
+        } else {
+          gastos.forEach((gasto, index) => {
+            const item = document.createElement('div');
+            item.className = 'gasto-item';
+            item.innerHTML = `
+              <span>${gasto.desc}</span>
+              <span>$${gasto.monto.toFixed(2)}</span>
+              <button data-index="${index}"><i class="fas fa-trash"></i></button>
+            `;
+            gastosList.appendChild(item);
+            
+            item.querySelector('button').addEventListener('click', (e) => {
+              gastos.splice(index, 1);
+              renderCaja();
+              guardarDatosTemporales();
+            });
+          });
+        }
       }
+      
+      // Agregar gasto
+      document.getElementById('addGasto').addEventListener('click', () => {
+        const desc = document.getElementById('gastoDesc').value;
+        const monto = parseFloat(document.getElementById('gastoMonto').value);
+        
+        if(!desc || isNaN(monto)) {
+          alert('Por favor complete la descripción y el monto');
+          return;
+        }
+        
+        gastos.push({
+          desc,
+          monto,
+          fecha: new Date().toLocaleString()
+        });
+        
+        document.getElementById('gastoDesc').value = '';
+        document.getElementById('gastoMonto').value = '';
+        
+        renderCaja();
+        guardarDatosTemporales();
+      });
       
       // Close day and export to Excel
       document.getElementById('closeDay').addEventListener('click', cerrarDia);
       
-      // Toggle category visibility
-      document.querySelectorAll('.category-header').forEach(header => {
-        header.addEventListener('click', function() {
-          const content = this.nextElementSibling;
+      // Toggle category visibility - CORREGIDO
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.category-header')) {
+          const header = e.target.closest('.category-header');
+          const content = header.nextElementSibling;
+          const icon = header.querySelector('i');
+          
           if(content.style.display === 'none') {
             content.style.display = 'block';
-            this.querySelector('i').className = 'fas fa-chevron-up';
+            icon.className = 'fas fa-chevron-up';
           } else {
             content.style.display = 'none';
-            this.querySelector('i').className = 'fas fa-chevron-down';
+            icon.className = 'fas fa-chevron-down';
           }
-        });
-        
-        // Inicializar: todas las categorías expandidas
-        const content = header.nextElementSibling;
+        }
+      });
+
+      // Initialize categories as expanded
+      document.querySelectorAll('.category-content').forEach(content => {
         content.style.display = 'block';
-        header.querySelector('i').className = 'fas fa-chevron-up';
+      });
+      document.querySelectorAll('.category-header i').forEach(icon => {
+        icon.className = 'fas fa-chevron-up';
       });
 
       // Initialize
@@ -1301,7 +1546,7 @@
       updatePreview();
       renderSubLists();
       renderManagement();
-      renderStats();
+      renderCaja();
     });
   </script>
 </body>
