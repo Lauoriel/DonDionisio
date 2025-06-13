@@ -501,11 +501,11 @@
               </div>
               
               <div class="category-item">
-                <div class="category-header" data-cat="sandwiches">
-                  <span>Sándwiches</span>
+                <div class="category-header" data-cat="sandwiches_de_milanesa">
+                  <span>Sándwiches de Milanesa</span>
                   <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="category-content" id="sandwichesList"></div>
+                <div class="category-content" id="sandwiches_de_milanesaList"></div>
               </div>
               
               <div class="category-item">
@@ -514,6 +514,22 @@
                   <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="category-content" id="hamburguesasList"></div>
+              </div>
+              
+              <div class="category-item">
+                <div class="category-header" data-cat="empanadas">
+                  <span>Empanadas</span>
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="category-content" id="empanadasList"></div>
+              </div>
+              
+              <div class="category-item">
+                <div class="category-header" data-cat="minutas">
+                  <span>Minutas</span>
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="category-content" id="minutasList"></div>
               </div>
             </div>
             
@@ -578,8 +594,10 @@
         <input id="newName" placeholder="Nombre del producto" style="padding:10px;">
         <select id="newTipo" style="padding:10px;">
           <option value="pizzas">Pizza</option>
-          <option value="sandwiches">Sándwich</option>
           <option value="hamburguesas">Hamburguesa</option>
+          <option value="sandwiches_de_milanesa">Sándwich de Milanesa</option>
+          <option value="empanadas">Empanada</option>
+          <option value="minutas">Minuta</option>
         </select>
         <input id="newPrice" type="number" placeholder="Precio" style="padding:10px;">
         <button class="add-btn" id="addProd">Agregar</button>
@@ -638,25 +656,197 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Datos iniciales
-      let productos = [
-        {id:1,nombre:'Muzzarella',tipo:'pizzas',precio:1200},
-        {id:2,nombre:'Napolitana',tipo:'pizzas',precio:1500},
-        {id:3,nombre:'Fugazzeta',tipo:'pizzas',precio:1400},
-        {id:4,nombre:'Especial',tipo:'pizzas',precio:1600},
-        {id:5,nombre:'Calabresa',tipo:'pizzas',precio:1500},
-        {id:6,nombre:'Jamón y Queso',tipo:'sandwiches',precio:800},
-        {id:7,nombre:'Milanesa',tipo:'sandwiches',precio:1000},
-        {id:8,nombre:'Lomito',tipo:'sandwiches',precio:1200},
-        {id:9,nombre:'Vegetariano',tipo:'sandwiches',precio:900},
-        {id:10,nombre:'Clásica',tipo:'hamburguesas',precio:1000},
-        {id:11,nombre:'Doble',tipo:'hamburguesas',precio:1400},
-        {id:12,nombre:'Especial',tipo:'hamburguesas',precio:1500},
-        {id:13,nombre:'Vegetariana',tipo:'hamburguesas',precio:1200}
-      ];
-      
+      // Nuevo menú extraído de las imágenes
+      const menu = {
+        PIZZAS: [
+          "Muzzarela",
+          "Fugazzeta",
+          "Napolitana",
+          "Jamón y Morrones",
+          "Huevo",
+          "Calabresa",
+          "Primavera",
+          "Ranchera",
+          "Fugazzeta Especial",
+          "Ranchera Panceta",
+          "Cuatro Quesos",
+          "Roquefort",
+          "Palmitos",
+          "Vienesa",
+          "Vienesa Especial",
+          "Papas con Cheddar",
+          "Napolitana Especial",
+          "Barrilete"
+        ],
+        HAMBURGUESAS: [
+          "Opción Uno (Simple)",
+          "Opción Uno (Doble)",
+          "Opción Dos (Simple)",
+          "Opción Dos (Doble)",
+          "Combo 5 Hamburguesas"
+        ],
+        SANDWICHES_DE_MILANESA: [
+          "XL Completo",
+          "XL Napolitano",
+          "XL Ranchero",
+          "Individual Completo",
+          "Individual Napolitano"
+        ],
+        EMPANADAS: [
+          "Carne",
+          "Pollo",
+          "Jamón y Queso"
+        ],
+        MINUTAS: [
+          "Milanesa Napolitana",
+          "Milanesa a Caballo",
+          "Porción de Papas Fritas",
+          "Papas con Cheddar",
+          "Papas con Cheddar y Panceta"
+        ]
+      };
+
+      // Precios por defecto para los nuevos productos
+      const defaultPrices = {
+        // Pizzas
+        "Muzzarela": 8000,
+        "Fugazzeta": 9500,
+        "Napolitana": 9500,
+        "Jamón y Morrones": 9500,
+        "Huevo": 9500,
+        "Calabresa": 9500,
+        "Primavera": 10000,
+        "Ranchera": 10000,
+        "Fugazzeta Especial": 10000,
+        "Ranchera Panceta": 11000,
+        "Cuatro Quesos": 10500,
+        "Roquefort": 10500,
+        "Palmitos": 10500,
+        "Vienesa": 10000,
+        "Vienesa Especial": 11000,
+        "Papas con Cheddar": 11000,
+        "Napolitana Especial": 10000,
+        "Barrilete": 12000,
+        
+        // Hamburguesas
+        "Opción Uno (Simple)": 6500,
+        "Opción Uno (Doble)": 8500,
+        "Opción Dos (Simple)": 6500,
+        "Opción Dos (Doble)": 8500,
+        "Combo 5 Hamburguesas": 14000,
+        
+        // Sándwiches
+        "XL Completo": 12000,
+        "XL Napolitano": 12000,
+        "XL Ranchero": 12000,
+        "Individual Completo": 7000,
+        "Individual Napolitano": 7000,
+        
+        // Empanadas
+        "Carne": 1000,
+        "Pollo": 1000,
+        "Jamón y Queso": 1000,
+        
+        // Minutas
+        "Milanesa Napolitana": 7000,
+        "Milanesa a Caballo": 7000,
+        "Porción de Papas Fritas": 3000,
+        "Papas con Cheddar": 3700,
+        "Papas con Cheddar y Panceta": 4000
+      };
+
+      // Convertir el menú en array de productos
+      let productos = [];
+      Object.keys(menu).forEach(tipo => {
+        const tipoNormalizado = tipo.toLowerCase().replace('_', '');
+        menu[tipo].forEach(nombre => {
+          productos.push({
+            id: Date.now() + Math.random(),
+            nombre,
+            tipo: tipoNormalizado,
+            precio: defaultPrices[nombre] || 0
+          });
+        });
+      });
+
       let pedidos = [], pid = 1, currentOrder = [];
-      
+
+      // 1. Almacenamiento temporal en localStorage
+      const guardarDatosTemporales = () => {
+        const datosDia = {
+          productos,
+          pedidos,
+          pid
+        };
+        localStorage.setItem('datosDia', JSON.stringify(datosDia));
+      };
+
+      // 2. Cargar datos al iniciar (si existen)
+      const cargarDatosTemporales = () => {
+        const datosGuardados = localStorage.getItem('datosDia');
+        return datosGuardados ? JSON.parse(datosGuardados) : null;
+      };
+
+      // 3. Función "Cerrar día" (modificada)
+      const cerrarDia = () => {
+        // Paso 1: Respaldo en hoja de cálculo
+        const ent = pedidos.filter(o => o.estado === 'finalizado');
+        if(ent.length === 0) {
+          alert('No hay pedidos entregados hoy');
+          return;
+        }
+
+        // Prepare data for Excel
+        const data = ent.map(order => {
+          const items = order.items.map(item => item.desc).join('; ');
+          const total = order.items.reduce((sum, item) => sum + item.precio, 0);
+          
+          return {
+            'ID Pedido': order.id,
+            'Dirección': order.dir,
+            'Método de Pago': order.pago === 'efectivo' ? 'Efectivo' : 'MercadoPago',
+            'Productos': items,
+            'Total': total,
+            'Hora': order.hora,
+            'Fecha': new Date().toLocaleDateString('es-ES')
+          };
+        });
+
+        // Create worksheet
+        const ws = XLSX.utils.json_to_sheet(data);
+
+        // Create workbook
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
+
+        // Generate file and download
+        const dateStr = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(wb, `Pedidos_DonDionisio_${dateStr}.xlsx`);
+
+        alert(`Se ha generado el archivo Excel con ${ent.length} pedidos`);
+        
+        // Paso 2: Borrar datos del localStorage
+        localStorage.removeItem('datosDia');
+        
+        // Paso 3: Reiniciar variables de pedidos
+        pedidos = [];
+        pid = 1;
+        
+        // Actualizar UI
+        renderSubLists();
+        renderStats();
+        
+        console.log("Día cerrado: Datos respaldados y borrados de caché.");
+      };
+
+      // Cargar datos iniciales
+      const datosIniciales = cargarDatosTemporales();
+      if (datosIniciales) {
+        productos = datosIniciales.productos || productos;
+        pedidos = datosIniciales.pedidos || [];
+        pid = datosIniciales.pid || pid;
+      }
+
       // Sidebar navigation
       const tabs = document.querySelectorAll('.sidebar .tab');
       tabs.forEach(tab => {
@@ -686,24 +876,36 @@
 
       // Render categories with scrollable lists
       function renderCategories() {
-        const categories = ['pizzas', 'sandwiches', 'hamburguesas'];
+        const categories = ['pizzas', 'hamburguesas', 'sandwichesdemilanesa', 'empanadas', 'minutas'];
+        
+        // Actualizar los nombres de las categorías para mostrar
+        const categoryNames = {
+          'pizzas': 'Pizzas',
+          'hamburguesas': 'Hamburguesas',
+          'sandwichesdemilanesa': 'Sándwiches de Milanesa',
+          'empanadas': 'Empanadas',
+          'minutas': 'Minutas'
+        };
+        
         categories.forEach(cat => {
           const list = document.getElementById(`${cat}List`);
-          list.innerHTML = '';
-          productos.filter(p => p.tipo === cat).forEach(p => {
-            const item = document.createElement('div');
-            item.className = 'product-item';
-            item.dataset.id = p.id;
-            item.innerHTML = `
-              <div class="product-name">${p.nombre}</div>
-              <div class="product-price">$${p.precio}</div>
-            `;
-            list.appendChild(item);
-            
-            item.addEventListener('click', () => {
-              showProductDetail(p);
+          if (list) {
+            list.innerHTML = '';
+            productos.filter(p => p.tipo === cat).forEach(p => {
+              const item = document.createElement('div');
+              item.className = 'product-item';
+              item.dataset.id = p.id;
+              item.innerHTML = `
+                <div class="product-name">${p.nombre}</div>
+                <div class="product-price">$${p.precio}</div>
+              `;
+              list.appendChild(item);
+              
+              item.addEventListener('click', () => {
+                showProductDetail(p);
+              });
             });
-          });
+          }
         });
       }
       
@@ -729,7 +931,7 @@
               </div>
             </div>
           `;
-        } else if(p.tipo === 'sandwiches') {
+        } else if(p.tipo === 'sandwichesdemilanesa') {
           optionsHTML = `
             <div class="product-options">
               <h4>Opciones de Sándwich</h4>
@@ -749,7 +951,7 @@
             <div style="font-size: 1.3em; font-weight: bold; color: var(--color-principal);">$${p.precio}</div>
           </div>
           <p style="margin-bottom: 15px; color:#666;">${p.tipo === 'pizzas' ? 'Pizza clásica con ingredientes frescos' : 
-            p.tipo === 'sandwiches' ? 'Sándwich artesanal' : 'Hamburguesa gourmet'}</p>
+            p.tipo === 'sandwichesdemilanesa' ? 'Sándwich artesanal' : p.tipo === 'hamburguesas' ? 'Hamburguesa gourmet' : p.tipo === 'empanadas' ? 'Empanada casera' : 'Minuta del día'}</p>
           ${optionsHTML}
           <div style="text-align: center; margin-top: 20px;">
             <button class="add-btn" style="padding: 12px 25px; font-size: 1.1em;" 
@@ -778,7 +980,7 @@
           }
         }
         
-        if(prod.tipo === 'sandwiches') {
+        if(prod.tipo === 'sandwichesdemilanesa') {
           const checkbox = document.querySelector(`.papas-checkbox[data-id="${prod.id}"]`);
           if(checkbox && checkbox.checked) {
             precio += 1000;
@@ -844,6 +1046,9 @@
         renderStats();
         
         document.getElementById('dir').value = '';
+        
+        // Guardar en localStorage
+        guardarDatosTemporales();
       });
       
       // Show ticket for printing
@@ -933,6 +1138,7 @@
                 o.estado = e === 'cocina' ? 'camino' : 'finalizado';
                 renderSubLists();
                 renderStats();
+                guardarDatosTemporales();
               });
               
               card.appendChild(btn);
@@ -969,8 +1175,11 @@
         document.querySelectorAll('.edit-price').forEach(inp => 
           inp.addEventListener('change', () => {
             const prod = productos.find(x => x.id == inp.dataset.id);
-            if(prod) prod.precio = Number(inp.value);
-            renderCategories();
+            if(prod) {
+              prod.precio = Number(inp.value);
+              renderCategories();
+              guardarDatosTemporales();
+            }
           })
         );
         
@@ -979,6 +1188,7 @@
             productos = productos.filter(x => x.id != btn.dataset.id);
             renderManagement();
             renderCategories();
+            guardarDatosTemporales();
           })
         );
       }
@@ -1003,6 +1213,7 @@
         
         renderManagement();
         renderCategories();
+        guardarDatosTemporales();
         
         document.getElementById('newName').value = '';
         document.getElementById('newPrice').value = '';
@@ -1064,42 +1275,7 @@
       }
       
       // Close day and export to Excel
-      document.getElementById('closeDay').addEventListener('click', () => {
-        const ent = pedidos.filter(o => o.estado === 'finalizado');
-        if(ent.length === 0) {
-          alert('No hay pedidos entregados hoy');
-          return;
-        }
-        
-        // Prepare data for Excel
-        const data = ent.map(order => {
-          const items = order.items.map(item => item.desc).join('; ');
-          const total = order.items.reduce((sum, item) => sum + item.precio, 0);
-          
-          return {
-            'ID Pedido': order.id,
-            'Dirección': order.dir,
-            'Método de Pago': order.pago === 'efectivo' ? 'Efectivo' : 'MercadoPago',
-            'Productos': items,
-            'Total': total,
-            'Hora': order.hora,
-            'Fecha': new Date().toLocaleDateString('es-ES')
-          };
-        });
-        
-        // Create worksheet
-        const ws = XLSX.utils.json_to_sheet(data);
-        
-        // Create workbook
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
-        
-        // Generate file and download
-        const dateStr = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, `Pedidos_DonDionisio_${dateStr}.xlsx`);
-        
-        alert(`Se ha generado el archivo Excel con ${ent.length} pedidos`);
-      });
+      document.getElementById('closeDay').addEventListener('click', cerrarDia);
       
       // Toggle category visibility
       document.querySelectorAll('.category-header').forEach(header => {
